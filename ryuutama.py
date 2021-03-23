@@ -66,13 +66,16 @@ class PlayerCharacter:
         if sum(roll[:-1]) == 2:
             print('Oh no, a fumble!')
             self.fumbles += 1
+            return 2
         elif roll[:-1] == [self.abilityScores[ability1], self.abilityScores[ability2]] or roll[:-1] == [6, 6]:
             print('CRITICAL SUCCESS!')
         else:
             print(f"You rolled a {sum(roll)}.")
+        return sum(roll)
     
     def rollCondition(self, modifier=0):
-        return self.rollTest('STR', 'SPI', modifier)
+        self.condition = self.rollTest('STR', 'SPI', modifier)
+        
             
 
 class Ryuujin:
