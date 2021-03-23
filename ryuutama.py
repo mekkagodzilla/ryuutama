@@ -3,7 +3,7 @@ import random
 
 
 class PlayerCharacter:
-
+    '''Models a PlayerCharacter'''
 
 
     def __repr__(self):
@@ -62,12 +62,12 @@ class PlayerCharacter:
     
 
     def rollTest(self, ability1, ability2, modifier=0):
-        roll = [random.randint(1, self.abilityScores[ability1]), random.randint(1, self.abilityScores[ability2]), modifier]
-        if sum(roll[:-1]) == 2:
+        roll = [random.randint(1, self.abilityScores[ability1.upper()]), random.randint(1, self.abilityScores[ability2.upper()]), modifier]
+        if sum(roll[0:2]) == 2:
             print('Oh no, a fumble!')
             self.fumbles += 1
             return 2
-        elif roll[:-1] == [self.abilityScores[ability1], self.abilityScores[ability2]] or roll[:-1] == [6, 6]:
+        elif roll[0:2] == [self.abilityScores[ability1.upper()], self.abilityScores[ability2.upper()]] or roll[0:2] == [6, 6]:
             print('CRITICAL SUCCESS!')
         else:
             print(f"You rolled a {sum(roll)}.")
@@ -75,7 +75,23 @@ class PlayerCharacter:
     
     def rollCondition(self, modifier=0):
         self.condition = self.rollTest('STR', 'SPI', modifier)
-        
+        print(f"Your condition for today is {self.condition}.")
+        if self.condition > 9:
+            print("You feel in top shape today. raise one ability score by one step!")
+        elif self.condition < 2:
+            print("Oh no, you feel really out of shape today.")
+            print("Please choose a status effect among this list") #todo : implement status effect with user input
+    
+    def rollInitiative(self):
+        self.initiative = self.rollTest('DEX', 'INT')
+        print(f'Your initiative is {self.initiative}.')
+    
+    
+    #todo : implement level up method
+    #todo : implement inventory and encombrance system
+    #todo : improve rollCondition to allow for temp stat raising
+    #todo : implement current / max SP and SP
+ 
             
 
 class Ryuujin:
