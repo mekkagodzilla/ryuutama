@@ -35,7 +35,8 @@ class PlayerCharacter:
         self.maxHP = self.abilityScores['STR'] * 2
         self.maxSP = self.abilityScores['SPI'] * 2
         
-        print("Your ability scores are:", self.abilityScores)
+        print("Your base ability scores are:", self.abilityScores)
+
 
 
     def __init__(self):
@@ -58,16 +59,45 @@ class PlayerCharacter:
         self.gender = pyip.inputMenu(genderList, lettered=True, prompt='You are a…\n')
 
         self.fumbles = 0
-        self.condition = None
+        self.condition = 8
+        self.statuses = {'Injury': 0, 'Poison': 0, 'Sickness': 0, 'Tired': 0, 'High':0, 'Shock':0}
+        
+        self.setStartingAbilityScores()
+        self.currentAbilityScores = self.abilityScores
+        
     
+    def applyStatuses(self):
+        #first reset the ability scores to their base value before reducing them if any status
+        self.currentAbilityScores = self.abilityScores
+        if self.statuses['Injury'] >= self.condition:
+            self.currentAbilityScores['DEX'] -= 2
+        if self.statuses['Poison'] >= self.condition:
+            self.currentAbilityScores['STR'] -= 2
+        if self.statuses['Sickness'] >= self.condition:
+            for ability in self.currentAbilityScores.keys():
+                self.currentAbilityScores[ability] -= 2
+        if self.statuses['Tired'] >= self.condition:
+            self.currentAbilityScores['SPI'] -= 2
+        if self.statuses['High'] >= self.condition:
+            self.currentAbilityScores['INT'] -= 2
+        if self.statuses['Shock'] >= self.condition:
+            for ability in self.currentAbilityScores.keys():
+                self.currentAbilityScores[ability] -= 2
+        #normalize current ability scores to be min 4, max 12
+        for ability in self.currentAbilityScores.keys():
+            if self.currentAbilityScores[ability] < 4:
+                self.currentAbilityScores[ability] = 4
+            if self.currentAbilityScores[ability] > 12:
+                self.currentAbilityScores[ability] = 12
+
 
     def rollTest(self, ability1, ability2, modifier=0):
-        roll = [random.randint(1, self.abilityScores[ability1.upper()]), random.randint(1, self.abilityScores[ability2.upper()]), modifier]
+        roll = [random.randint(1, self.currentAbilityScores[ability1.upper()]), random.randint(1, self.currentAbilityScores[ability2.upper()]), modifier]
         if sum(roll[0:2]) == 2:
             print('Oh no, a fumble!')
             self.fumbles += 1
             return 2
-        elif roll[0:2] == [self.abilityScores[ability1.upper()], self.abilityScores[ability2.upper()]] or roll[0:2] == [6, 6]:
+        elif roll[0:2] == [self.currentAbilityScores[ability1.upper()], self.currentAbilityScores[ability2.upper()]] or roll[0:2] == [6, 6]:
             print('CRITICAL SUCCESS!')
         else:
             print(f"You rolled a {sum(roll)}.")
@@ -80,19 +110,27 @@ class PlayerCharacter:
             print("You feel in top shape today. raise one ability score by one step!")
         elif self.condition < 2:
             print("Oh no, you feel really out of shape today.")
-            print("Please choose a status effect among this list") #todo : implement status effect with user input
-    
+            print("Please choose a status effect among this list") 
+        
+        for status in self.statuses:
+            if self.statuses[status]:
+                if self.condition > self.statuses[status]:
+                    self.statuses[status] = 0
+                    print(f'{status} was cleared, nice!')
+        self.applyStatuses()
+
+
     def rollInitiative(self):
         self.initiative = self.rollTest('DEX', 'INT')
         print(f'Your initiative is {self.initiative}.')
-    
+        
     
     #todo : implement level up method
     #todo : implement inventory and encombrance system
     #todo : improve rollCondition to allow for temp stat raising
+    #todo : improve rollCondition to give status effect with user input
     #todo : implement current / max SP and SP
- 
-            
+       
 
 class Ryuujin:
     pass
