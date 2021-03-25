@@ -5,7 +5,6 @@ import random
 class PlayerCharacter:
     '''Models a PlayerCharacter'''
 
-
     def __repr__(self):
         return f'{self.name} is a level {self.level} {self.Class} of the {self.type} Type.'
    
@@ -95,13 +94,12 @@ class PlayerCharacter:
         roll = [random.randint(1, self.currentAbilityScores[ability1.upper()]), random.randint(1, self.currentAbilityScores[ability2.upper()]), modifier]
         if sum(roll[0:2]) == 2:
             print('Oh no, a fumble!')
-            self.fumbles += 1
-            return 2
+            self.fumbles += 1         
         elif roll[0:2] == [self.currentAbilityScores[ability1.upper()], self.currentAbilityScores[ability2.upper()]] or roll[0:2] == [6, 6]:
             print('CRITICAL SUCCESS!')
         else:
             print(f"You rolled a {sum(roll)}.")
-        return sum(roll)
+
     
     def rollCondition(self, modifier=0):
         self.condition = self.rollTest('STR', 'SPI', modifier)
@@ -126,6 +124,8 @@ class PlayerCharacter:
         
     
     #todo : implement level up method
+    #todo : implement types beyond just selecting one
+    #todo : improve fumbles, all players should have their fumbles incremented by 1 at the same time
     #todo : implement inventory and encombrance system
     #todo : improve rollCondition to allow for temp stat raising
     #todo : improve rollCondition to give status effect with user input
